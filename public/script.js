@@ -1,16 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Elemen DOM ---
     const form = document.getElementById('story-generator-form');
     const generateBtn = document.getElementById('generate-btn');
     const imageUpload = document.getElementById('image-upload');
     const imagePreview = document.querySelector('.image-preview__image');
     const imagePreviewDefaultText = document.querySelector('.image-preview__default-text');
-    const loader = document.getElementById('loader');
+    const loaderOverlay = document.getElementById('loader-overlay'); 
     const errorMessage = document.getElementById('error-message');
     const outputSection = document.getElementById('output-section');
     const generatedImage = document.getElementById('generated-image');
     const generatedCaption = document.getElementById('generated-caption');
     const copyCaptionBtn = document.getElementById('copy-caption-btn');
 
+    // --- Event Listeners ---
     imageUpload.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -28,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
 
         const title = document.getElementById('title').value.trim();
-        const stylePrompt = document.getElementById('style-prompt').value.trim(); // Ambil nilai style
+        const stylePrompt = document.getElementById('style-prompt').value.trim();
         const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value);
         const imageFile = imageUpload.files[0];
 
@@ -44,12 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('stylePrompt', stylePrompt); // Tambahkan style prompt ke form data
+        formData.append('stylePrompt', stylePrompt);
         formData.append('categories', JSON.stringify(selectedCategories));
         formData.append('image', imageFile);
 
         try {
-            // Panggil endpoint baru /api/generate-creative
             const response = await fetch('/api/generate-creative', {
                 method: 'POST',
                 body: formData,
@@ -61,7 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(data.error || `HTTP error! status: ${response.status}`);
             }
             
-            // Tampilkan hasil baru dari server
             displayResult(data.newImageUrl, data.newCaption);
 
         } catch (error) {
@@ -82,7 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const showLoader = (isLoading) => loader.classList.toggle('hidden', !isLoading);
+    // --- Fungsi Helper ---
+    const showLoader = (isLoading) => {
+        loaderOverlay.classList.toggle('hidden', !isLoading);
+    };
 
     const showError = (message) => {
         errorMessage.textContent = message || '';
@@ -90,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const displayResult = (imgUrl, captionText) => {
-        // Sekarang kita set src dari URL yang diberikan server
         generatedImage.src = imgUrl;
         generatedCaption.innerText = captionText.trim();
         outputSection.classList.remove('hidden');

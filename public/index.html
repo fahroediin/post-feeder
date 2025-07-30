@@ -16,13 +16,12 @@
         <form id="story-generator-form">
             <div class="form-group">
                 <label for="title">1. Judul atau Konteks</label>
-                <input type="text" id="title" name="title" placeholder="Contoh: IKN di masa depan" required>
+                <input type="text" id="title" name="title" placeholder="Contoh: Koruptor makin bahagia" required>
             </div>
 
-            <!-- INPUT BARU UNTUK GAYA GAMBAR -->
             <div class="form-group">
                 <label for="style-prompt">2. Instruksi Gaya Gambar</label>
-                <input type="text" id="style-prompt" name="stylePrompt" placeholder="Contoh: Jadikan seperti lukisan cat minyak, gaya cyberpunk" required>
+                <input type="text" id="style-prompt" name="stylePrompt" placeholder="Contoh: Jadikan seperti kartun, gaya lukisan cat minyak" required>
             </div>
 
             <div class="form-group">
@@ -48,10 +47,15 @@
             <button type="submit" id="generate-btn">✨ Generate Kreasi Baru!</button>
         </form>
 
-        <div id="loader" class="loader hidden">
-            <p class="loader-text">AI sedang berkreasi... Proses ini bisa memakan waktu hingga 30 detik.</p>
-        </div>
         <div id="error-message" class="error-message hidden"></div>
+
+        <!-- Loader Overlay -->
+        <div id="loader-overlay" class="loader-overlay hidden">
+            <div class="loader-content">
+                <div class="loader"></div>
+                <p class="loader-text">AI sedang berkreasi...<br>Proses ini bisa memakan waktu hingga 30 detik.</p>
+            </div>
+        </div>
 
         <section id="output-section" class="output-section hidden">
             <h2>Hasil Generate</h2>

@@ -135,32 +135,6 @@ button:disabled {
     cursor: not-allowed;
 }
 
-.loader {
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid var(--primary-color);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 30px auto 10px auto; /* Beri sedikit jarak bawah */
-    display: flex; /* Untuk menata teks di bawahnya */
-    flex-direction: column;
-    align-items: center;
-}
-
-.loader-text {
-    margin-top: 15px;
-    color: #666;
-    font-size: 0.9rem;
-}
-
-
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 .error-message {
     background-color: #f2dede;
     color: var(--error-color);
@@ -194,7 +168,7 @@ button:disabled {
 }
 
 .output-caption-container p {
-    white-space: pre-wrap; /* Menjaga format paragraf dari AI */
+    white-space: pre-wrap;
     background-color: var(--secondary-color);
     padding: 15px;
     border-radius: 8px;
@@ -214,6 +188,57 @@ button:disabled {
 
 .hidden {
     display: none;
+}
+
+/* --- LOADER OVERLAY STYLES --- */
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.loader-overlay.hidden {
+    /* Menggunakan display: none; agar tidak menghalangi interaksi saat tersembunyi */
+    display: none;
+    opacity: 0;
+}
+
+.loader-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loader-text {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #555;
+    line-height: 1.5;
 }
 
 /* Responsive Design */

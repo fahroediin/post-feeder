@@ -4,15 +4,13 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-// Tidak perlu 'form-data' lagi
+const sharp = require('sharp');
 
 const { createStoryPrompt, createImageToImagePrompt } = require('./prompt-engine.js');
 
-// --- Inisialisasi Klien AI ---
+// --- Inisialisasi & Konfigurasi ---
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const geminiModel = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
-
-// --- Konfigurasi Stability AI ---
 const stabilityApiKey = process.env.STABILITY_API_KEY;
 const stabilityEngineId = 'stable-diffusion-xl-1024-v1-0';
 const stabilityApiHost = 'https://api.stability.ai';
@@ -37,21 +35,33 @@ app.post('/api/generate-creative', apiLimiter, upload.single('image'), async (re
             return res.status(400).json({ error: 'Judul, foto, dan instruksi gaya wajib diisi.' });
         }
 
-        // === LANGKAH 1: GENERATE GAMBAR BARU DENGAN STABILITY AI (IMAGE-TO-IMAGE) ===
-        console.log("Mempersiapkan data untuk Stability AI (Image-to-Image)...");
+        // Langkah Resize Gambar
+        console.log("Mengubah ukuran gambar agar sesuai dengan dimensi yang diizinkan...");
+        const resizedImageBuffer = await sharp(imageFile.buffer)
+            .resize({
+                width: 1024,
+                height: 1024,
+                fit: 'cover',
+                position: 'center'
+            })
+            .toFormat('png')
+            .toBuffer();
+        console.log("Gambar berhasil diubah ukurannya menjadi 1024x1024.");
 
-        // Menggunakan FormData bawaan Node.js
+        // Langkah 1: Generate Gambar Baru dengan Stability AI (Image-to-Image)
+        console.log("Mempersiapkan data untuk Stability AI (Image-to-Image)...");
         const formData = new FormData();
         
-        // Mengubah buffer menjadi Blob, yang lebih standar untuk FormData
-        const imageBlob = new Blob([imageFile.buffer], { type: imageFile.mimetype });
+        const imageBlob = new Blob([resizedImageBuffer], { type: 'image/png' });
         formData.append('init_image', imageBlob, 'init_image.png');
         
-        const imagePrompt = createImageToImagePrompt(stylePrompt);
-        formData.append('text_prompts[0][text]', imagePrompt);
-        
+        const prompts = createImageToImagePrompt(stylePrompt);
+        formData.append('text_prompts[0][text]', prompts.positive);
+        formData.append('text_prompts[1][text]', prompts.negative);
+        formData.append('text_prompts[1][weight]', '-1.0');
+
         formData.append('init_image_mode', 'IMAGE_STRENGTH');
-        formData.append('image_strength', '0.35'); // Kirim sebagai string, lebih aman
+        formData.append('image_strength', '0.25');
         formData.append('cfg_scale', '7');
         formData.append('samples', '1');
         formData.append('steps', '30');
@@ -61,8 +71,6 @@ app.post('/api/generate-creative', apiLimiter, upload.single('image'), async (re
 
         const response = await fetch(apiUrl, {
             method: 'POST',
-            // !!! KUNCI PERBAIKAN: JANGAN SET HEADER CONTENT-TYPE MANUAL !!!
-            // fetch akan otomatis mengaturnya dengan boundary yang benar saat body adalah FormData
             headers: {
                 Accept: 'application/json',
                 Authorization: `Bearer ${stabilityApiKey}`,
@@ -82,7 +90,7 @@ app.post('/api/generate-creative', apiLimiter, upload.single('image'), async (re
         const newImageUrlForDisplay = `data:image/png;base64,${newImageBase64}`;
         console.log("Gambar baru berhasil dibuat.");
 
-        // === LANGKAH 2 & 3 (Tetap Sama) ===
+        // Langkah 2 & 3: Generate Caption dengan Gemini
         console.log("Meminta caption dari Gemini...");
         const imagePart = { inlineData: { data: newImageBuffer.toString("base64"), mimeType: 'image/png' } };
         const parsedCategories = JSON.parse(categories);
