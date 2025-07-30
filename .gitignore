@@ -1,0 +1,5 @@
+# Dependensi
+node_modules
+
+# File environment variabel yang berisi rahasia
+.env

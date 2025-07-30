@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Creative Story Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="container">
+        <header>
+            <h1>AI Creative Story Generator 🎨</h1>
+            <p>Generate gambar dan caption baru untuk sosial media Anda.</p>
+        </header>
+
+        <form id="story-generator-form">
+            <div class="form-group">
+                <label for="title">1. Judul atau Konteks</label>
+                <input type="text" id="title" name="title" placeholder="Contoh: IKN di masa depan" required>
+            </div>
+
+            <!-- INPUT BARU UNTUK GAYA GAMBAR -->
+            <div class="form-group">
+                <label for="style-prompt">2. Instruksi Gaya Gambar</label>
+                <input type="text" id="style-prompt" name="stylePrompt" placeholder="Contoh: Jadikan seperti lukisan cat minyak, gaya cyberpunk" required>
+            </div>
+
+            <div class="form-group">
+                <label>3. Pilih Kategori Caption</label>
+                <div class="category-group">
+                    <label><input type="checkbox" name="category" value="Umum"> Umum</label>
+                    <label><input type="checkbox" name="category" value="Politik"> Politik</label>
+                    <label><input type="checkbox" name="category" value="Agama"> Agama</label>
+                    <label><input type="checkbox" name="category" value="Sarkas"> Sarkas</label>
+                    <label><input type="checkbox" name="category" value="Lucu"> Lucu</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="image-upload">4. Unggah Foto Referensi</label>
+                <input type="file" id="image-upload" name="image" accept="image/*" required>
+                <div id="image-preview" class="image-preview">
+                    <img src="" alt="Image Preview" class="image-preview__image">
+                    <span class="image-preview__default-text">Pratinjau Gambar</span>
+                </div>
+            </div>
+
+            <button type="submit" id="generate-btn">✨ Generate Kreasi Baru!</button>
+        </form>
+
+        <div id="loader" class="loader hidden">
+            <p class="loader-text">AI sedang berkreasi... Proses ini bisa memakan waktu hingga 30 detik.</p>
+        </div>
+        <div id="error-message" class="error-message hidden"></div>
+
+        <section id="output-section" class="output-section hidden">
+            <h2>Hasil Generate</h2>
+            <div class="output-content">
+                <div class="output-image-container">
+                    <h3>Gambar Baru:</h3>
+                    <img id="generated-image" src="" alt="Generated Image">
+                </div>
+                <div class="output-caption-container">
+                    <h3>Caption Baru:</h3>
+                    <p id="generated-caption"></p>
+                    <button id="copy-caption-btn">Salin Caption</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
